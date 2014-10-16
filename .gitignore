@@ -29,3 +29,5 @@
 *.hex
 
 *.swp
+*.DS_Store
+.gitignore
