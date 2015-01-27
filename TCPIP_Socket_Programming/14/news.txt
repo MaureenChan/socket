@@ -1,0 +1,9 @@
+helloworld How do you do 
+how old are you 
+have fun
+have a nice day
+good morning
+good afternoon
+good evening
+good night
+good bye
