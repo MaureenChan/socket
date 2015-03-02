@@ -11,6 +11,8 @@ void *handle_clnt(void *arg) {
     struct req request;
     struct usr user;
     list<Entry>::const_iterator itr;
+    list<Entry>::const_iterator sender;
+    list<Entry>::const_iterator recver;
     while (recv(clnt_sock, &request, sizeof(request), 0) > 0) {
         // handle online
         if (request.code == 1) {
@@ -56,6 +58,14 @@ void *handle_clnt(void *arg) {
             if (send(clnt_sock, &request, sizeof(request), 0) < 0) 
                 error_handling("send error");
             break;
+        } else if (request.code == 4) {
+            pthread_mutex_lock(&mutx);
+            user_sock.Find(request.recver, recver);
+            user_sock.Find(request.sender, sender);
+            pthread_mutex_unlock(&mutx);
+            request.user.username = sender->getData();
+            if (send(recver->getSocket(), &request, sizeof(request), 0) < 0) 
+                error_handling("send failed");
         }
         memset(&request, 0, sizeof(request));
 
@@ -70,6 +80,8 @@ int main() {
     list<Entry>::const_iterator itr;
     socklen_t clnt_adr_sz;
     pthread_t t_id;
+
+    
 
     pthread_mutex_init(&mutx, NULL);
     

@@ -26,6 +26,17 @@ void *send_msg(void *arg) {
         } else if (command.code == 4) {
             // send message
             cout << "I'm in 4 now" << endl;
+            command.sender = user.uid;
+            cout << "Test now uid: " << user.uid << endl;
+            cout << "Enter receiver uid" << endl;
+            cin >> command.recver;
+            cout << "Enter message" << endl;
+            cin.getline(command.msg, sizeof(command.msg));
+            cout << "message is : " << command.msg << endl;
+
+            if (send(sock, &command, sizeof(command), 0) < 0) 
+                error_handling("send error");
+
         }
         memset(&command, 0, sizeof(command));
         cout << "I'm going to input" << endl;
@@ -49,7 +60,11 @@ void *recv_msg(void *arg) {
             close(sock);
             cout << "end parent process" << endl;
             return 0;
+        } else if (request.code == 4) {
+            cout << "message from uid " << request.sender << " [ " << request.user.username << " ] "<< endl;
+            cout << "message: " << request.msg << endl;
         }
+
 
     }
 

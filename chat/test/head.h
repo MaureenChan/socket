@@ -28,7 +28,7 @@ struct req {
     int sender;
     int recver;
     struct usr user;
-    string msg;
+    char msg[1024];
 };
 #pragma pack(0)
 
