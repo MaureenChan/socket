@@ -30,55 +30,42 @@ int main(int argc, char *argv[]) {
 
     // interchange data
     struct req online;
-    memset(&online, 0, sizeof(online));
-    //cout << "online code:\t" << online.code << endl; 
-    //cout << "online sender:\t" << online.sender << endl; 
-    //cout << "online recver:\t" << online.recver << endl; 
-    //cout << "online msg:\t" << online.msg << endl; 
-    online.user = user;
-    cout << "online uid:" << online.user.uid << endl; 
-    cout << "online username:" << online.user.username << endl; 
-    online.code = 1;
-    if (send(sock, &online, sizeof(online), 0) < 0)
-        error_handling("send failed");
-
-    if (recv(sock, &user, sizeof(user), 0) > 0) {
-        cout << "user id:\t" << user.uid << endl;
-        cout << "user name:\t" << user.username << endl;
-    }
-
-    online.code = 2;
-    if (send(sock, &online, sizeof(online), 0) < 0)
-        error_handling("send error");
-
     struct req request;
+    struct req command;
     pid = fork();
     while (1) {
         if (pid == 0) {
             // parent proc
             cout << "I'm going to input" << endl;
-            struct req command;
             memset(&command, 0, sizeof(command));
             while (cin >> command.code) {
-                if (command.code == 3) {
-                    cout << "I'm in 3 now" << endl;
+                if (command.code == 1) {
+                    // sign in
+                    command.user.username = user.username;
+                    if (send(sock, &command, sizeof(command), 0) < 0) 
+                        error_handling("send error");
+                } else if (command.code == 2) {
+                    // get online user
+                    if (send(sock, &command, sizeof(command), 0) < 0)
+                        error_handling("send error");
+                } else if (command.code == 3) {
+                    // offline
                     command.user.uid = user.uid;
                     command.user.username = user.username;
                     if (send(sock, &command, sizeof(command), 0) < 0) 
                         error_handling("send error");
-                     
-                    cout << "Success" << endl;
-                    cout << "end Child process" << endl;
                     return 0;
                 } else if (command.code == 4) {
+                    // send message
                     cout << "I'm in 4 now" << endl;
                 }
-
             }
         } else {
             // child proc
             while (recv(sock, &request, sizeof(request), 0) > 0) {
-                if (request.code == 2) {
+                if (request.code == 1) {
+                    user.uid = request.user.uid;
+                } else if (request.code == 2) {
                     cout << "user id:\t" << request.user.uid << endl;
                     cout << "user name:\t" << request.user.username << endl;
                 } else if (request.code == 3) {
