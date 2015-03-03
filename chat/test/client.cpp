@@ -63,6 +63,8 @@ void *recv_msg(void *arg) {
         } else if (request.code == 4) {
             cout << "message from uid " << request.sender << " [ " << request.user.username << " ] "<< endl;
             cout << "message: " << request.msg << endl;
+        } else if (request.code == 5) {
+            cout << "uid: " << request.user.uid << " [ " << request.user.username << " ] is online" << endl;
         }
 
 

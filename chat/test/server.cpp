@@ -19,7 +19,19 @@ void *handle_clnt(void *arg) {
             cout << "after 1 request code : " << request.code << endl;
             // distribute uid
             pthread_mutex_lock(&mutx);
-            request.user.uid = UID++;
+            // request.user.uid online user
+            request.user.uid = UID++; 
+            // broadcast online user
+            struct req broadcast;
+            broadcast.code = 5;
+            broadcast.user.uid = request.user.uid;
+            broadcast.user.username = request.user.username;
+            for (int i = 0; i < 10; i++) {
+                for (itr = user_sock.containers[i].begin(); itr != user_sock.containers[i].end(); itr++) {
+                    if (send(itr->getSocket(), &broadcast, sizeof(broadcast), 0) < 0)
+                        error_handling("send failed");
+                }
+            }
             // insert in hashtable
             user_sock.Insert(Entry(request.user.uid, clnt_sock, request.user.username));
             pthread_mutex_unlock(&mutx);
