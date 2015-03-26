@@ -1,13 +1,13 @@
 
 #include "head.h"
 #include "hashtable.h"
-int clnt_cnt = 0;
-int UID = 0;
-HashTable user_sock;
-pthread_mutex_t mutx;
+static int UID = 0;
+static HashTable user_sock;
+static pthread_mutex_t mutx;
+void *handle_clnt(void *arg);
 
 void *handle_clnt(void *arg) {
-    int clnt_sock = *((int*)arg);
+    int clnt_sock = *(static_cast<int*>(arg));
     struct req request;
     struct usr user;
     list<Entry>::const_iterator itr;
@@ -32,6 +32,7 @@ void *handle_clnt(void *arg) {
                         error_handling("send failed");
                 }
             }
+            
             // insert in hashtable
             user_sock.Insert(Entry(request.user.uid, clnt_sock, request.user.username));
             pthread_mutex_unlock(&mutx);
@@ -123,7 +124,7 @@ int main() {
         else
             cout << "new client connect..." << endl;
 
-        pthread_create(&t_id, NULL, handle_clnt, (void*) &clnt_sock);
+        pthread_create(&t_id, NULL, handle_clnt, static_cast<void*> (&clnt_sock));
         pthread_detach(t_id);
     }
     close(serv_sock);

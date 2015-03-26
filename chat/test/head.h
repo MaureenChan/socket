@@ -35,11 +35,13 @@ struct req {
 void error_handling(const string msg) {
     cout << msg << '\n' << endl;
     exit(1);
+    return ;
 }
 
-void read_childproc(int sig) {
-    pid_t pid;
-    int status;
-    pid = waitpid(-1, &status, WNOHANG);
-    cout << "removed proc id :" << pid << endl;
-}
+//void read_childproc(int sig) {
+    //pid_t pid;
+    //int status;
+    //pid = waitpid(-1, &status, WNOHANG);
+    //cout << "removed proc id :" << pid << endl;
+    //return ;
+//}
